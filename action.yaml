@@ -26,12 +26,11 @@ runs:
       run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
       shell: bash
     - name: Run backup and zip
-      run: python src/backup_script.py
+      run: python ${{ github.action_path }}/src/backup_script.py
       shell: bash
       env:
         SUPABASE_URL: ${{ inputs.SUPABASE_URL }}
         SUPABASE_SERVICE_ROLE: ${{ inputs.SUPABASE_SERVICE_ROLE }}
-        BACKUP_DIR: ${{ inputs.BACKUP_DIR }}
         ZIP_FILENAME: ${{ inputs.ZIP_FILENAME }}
     - name: Upload Backup Zip as Artifact
       uses: actions/upload-artifact@v3
