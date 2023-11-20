@@ -1,7 +1,6 @@
 # Supabase Backup GitHub Action
 
-This GitHub Action is designed to automate the process of backing up files from Supabase storage, compressing them into a ZIP file, and then committing the ZIP file as an artifact. 
-Artifact can then be used in subsequent workflow steps.
+This GitHub Action is designed to automate the process of backing up files from Supabase storage, compressing them into a ZIP file in the process.
 
 ## Features
 
@@ -49,14 +48,19 @@ Example workflow file:
 
          steps:
             - name: Checkout Repository
-               uses: actions/checkout@v2
+              uses: actions/checkout@v2
 
             - name: Supabase Backup
-               uses: zerodays/supabase-storage-backup@v1
+              uses: zerodays/supabase-storage-backup@v1
                with:
                   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
                   SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
                   OUTPUT_ZIP_FILE_NAME: backup.zip
+            - name: Save Backup
+              uses: actions/upload-artifact@v2
+              with:
+                  name: backup
+                  path: backup.zip
    ```
 
 
