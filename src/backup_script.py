@@ -5,7 +5,7 @@ from supabase import create_client, Client, StorageException
 import shutil
 
 
-def fetch_environment_variables() -> tuple[str, str]:
+def fetch_environment_variables() -> tuple[str, str, str]:
     supabase_url = os.getenv('SUPABASE_URL')
     if not supabase_url:
         raise ValueError("SUPABASE_URL environment variable is required")
@@ -14,7 +14,10 @@ def fetch_environment_variables() -> tuple[str, str]:
         raise ValueError(
             "SUPABASE_SERVICE_ROLE environment variable is required"
         )
-    return supabase_url, supabase_service_role
+    output_file_name = os.getenv(
+        'OUTPUT_ZIP_FILE_NAME', 'supabase-storage-backup.zip')
+
+    return supabase_url, supabase_service_role, output_file_name
 
 
 def create_supabase_client(url: str, service_role: str) -> Client:
@@ -63,8 +66,7 @@ def download_objects(
         print(f"Error listing objects in {bucket_name}: {e}")
 
 
-def zip_backup():
-    zip_filename = 'backup.zip'
+def zip_backup(zip_filename: str):
     with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk('supabase-backup'):
             for file in files:
@@ -81,7 +83,9 @@ def cleanup():
 
 # Main execution
 if __name__ == "__main__":
-    supabase_url, supabase_service_role = fetch_environment_variables()
+    supabase_url, \
+        supabase_service_role, \
+        output_file_name = fetch_environment_variables()
     supabase = create_supabase_client(supabase_url, supabase_service_role)
 
     try:
@@ -89,7 +93,7 @@ if __name__ == "__main__":
         for bucket in buckets:
             download_objects(bucket.name)
 
-        zip_backup()
+        zip_backup(output_file_name)
         cleanup()
     except StorageException as e:
         print(f"Error: {e}")

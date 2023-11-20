@@ -1,5 +1,5 @@
-name: "Supabase Backup and Commit"
-description: "Backs up files from Supabase storage, zips them, and commits as artifact with provided name"
+name: "Supabase Backup"
+description: "Backs up files from Supabase storage, zips them, and stores path to zip in GITHUB_ENV"
 inputs:
   SUPABASE_URL:
     description: "Supabase Project URL"
@@ -7,10 +7,10 @@ inputs:
   SUPABASE_SERVICE_ROLE:
     description: "Supabase Service Role Key"
     required: true
-  ARTIFACT_NAME:
-    description: "Name of artifact to be uploaded"
+  OUTPUT_ZIP_FILE_NAME:
+    description: "Name of output zip file"
     required: false
-    default: "supabase-storage-backup"
+    default: "supabase-storage-backup.zip"
 runs:
   using: "composite"
   steps:
@@ -28,8 +28,4 @@ runs:
       env:
         SUPABASE_URL: ${{ inputs.SUPABASE_URL }}
         SUPABASE_SERVICE_ROLE: ${{ inputs.SUPABASE_SERVICE_ROLE }}
-    - name: Upload Backup Zip as Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ inputs.ARTIFACT_NAME }}
-        path: backup.zip
+        OUTPUT_ZIP_FILE_NAME: ${{ inputs.OUTPUT_ZIP_FILE_NAME }}

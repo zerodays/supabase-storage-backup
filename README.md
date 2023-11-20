@@ -7,7 +7,6 @@ Artifact can then be used in subsequent workflow steps.
 
 - **Automated Backup:** Automatically backs up files from Supabase storage.
 - **ZIP Compression:** Compresses the backup into a ZIP file for efficient storage.
-- **Artifact Commit:** Commits the ZIP file as an artifact for easy access and tracking.
 
 ## Prerequisites
 
@@ -22,7 +21,7 @@ The action accepts the following inputs:
 
 - `SUPABASE_URL`: **Required**. Your Supabase Project URL.
 - `SUPABASE_SERVICE_ROLE`: **Required**. Your Supabase Service Role Key.
-- `ARTIFACT_NAME`: The name of the artifact to be created. Defaults to `supabase-storage-backup`.
+- `OUTPUT_ZIP_FILE_NAME`: The name of the ZIP file to be created. Defaults to `supabase-storage-backup.zip`.
 
 ## Setup
 
@@ -57,8 +56,8 @@ Example workflow file:
                with:
                   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
                   SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
-                  ARTIFACT_NAME: supabase-storage-backup
-   ``````
+                  OUTPUT_ZIP_FILE_NAME: backup.zip
+   ```
 
 
 
@@ -66,7 +65,7 @@ Example workflow file:
 
 Once set up, the action will run as per the triggers defined in your workflow file. 
 
-The action will create a ZIP file containing all files in your Supabase storage bucket. The ZIP file will be committed as an artifact to your repository.
+The action will create a ZIP file containing all files in your Supabase storage bucket. The ZIP file will be stored on `OUTPUT_ZIP_FILE_NAME`.
 What is done with the artifact is up to you. You can download it manually or use it in a subsequent workflow step. For example, you could upload the ZIP file to a cloud storage provider like AWS S3.
 
 
