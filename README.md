@@ -1,6 +1,7 @@
 # Supabase Backup GitHub Action
 
-This GitHub Action is designed to automate the process of backing up files from Supabase storage, compressing them into a ZIP file, and then committing the ZIP file as an artifact. It's a robust solution for ensuring your Supabase data is regularly and securely backed up.
+This GitHub Action is designed to automate the process of backing up files from Supabase storage, compressing them into a ZIP file, and then committing the ZIP file as an artifact. 
+Artifact can then be used in subsequent workflow steps.
 
 ## Features
 
@@ -21,7 +22,7 @@ The action accepts the following inputs:
 
 - `SUPABASE_URL`: **Required**. Your Supabase Project URL.
 - `SUPABASE_SERVICE_ROLE`: **Required**. Your Supabase Service Role Key.
-- `ZIP_FILENAME`: The name for the output ZIP file. Default is `backup.zip`.
+- `ARTIFACT_NAME`: The name of the artifact to be created. Defaults to `supabase-storage-backup`.
 
 ## Setup
 
@@ -34,19 +35,40 @@ The action accepts the following inputs:
 3. **Set Environment Variables:**
    Store your `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE` as secrets in your GitHub repository and reference them in your workflow file. This approach keeps sensitive information secure.
 
+Example workflow file:
+
+   ```yaml
+   name: Supabase Storage Backup
+
+   on:
+      schedule:
+         - cron: "0 0 * * *"
+
+   jobs:
+      backup:
+         runs-on: ubuntu-latest
+
+         steps:
+            - name: Checkout Repository
+               uses: actions/checkout@v2
+
+            - name: Supabase Backup
+               uses: zerodays/supabase-storage-backup@v1
+               with:
+                  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+                  SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+                  ARTIFACT_NAME: supabase-storage-backup
+   ``````
+
+
+
 ## Usage
 
-Once set up, the action will run as per the triggers defined in your workflow file. By default, it will:
+Once set up, the action will run as per the triggers defined in your workflow file. 
 
-1. Set up a Python environment.
-2. Install necessary Python dependencies.
-3. Set the current date as an environment variable.
-4. Run the backup and zip process.
-5. Upload the backup ZIP file as an artifact, tagged with the current date and time for easy identification.
+The action will create a ZIP file containing all files in your Supabase storage bucket. The ZIP file will be committed as an artifact to your repository.
+What is done with the artifact is up to you. You can download it manually or use it in a subsequent workflow step. For example, you could upload the ZIP file to a cloud storage provider like AWS S3.
 
-## Customization
-
-You can modify the action to suit your needs. Possible customizations include changing the backup frequency, modifying the backup script, or altering the ZIP file naming convention.
 
 ## Support and Contribution
 

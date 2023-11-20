@@ -1,5 +1,5 @@
 name: "Supabase Backup and Commit"
-description: "Backs up files from Supabase storage, zips them, and commits as artifact"
+description: "Backs up files from Supabase storage, zips them, and commits as artifact with provided name"
 inputs:
   SUPABASE_URL:
     description: "Supabase Project URL"
@@ -7,10 +7,10 @@ inputs:
   SUPABASE_SERVICE_ROLE:
     description: "Supabase Service Role Key"
     required: true
-  ZIP_FILENAME:
-    description: "Name for the output ZIP file"
+  ARTIFACT_NAME:
+    description: "Name of artifact to be uploaded"
     required: false
-    default: "backup.zip"
+    default: "supabase-storage-backup"
 runs:
   using: "composite"
   steps:
@@ -20,10 +20,7 @@ runs:
         python-version: "3.10"
     - name: Install Python dependencies
       run: |
-        pip install supabase
-      shell: bash
-    - name: Set current date as env variable
-      run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+        pip install -r ${{ github.action_path }}/requirements.txt
       shell: bash
     - name: Run backup and zip
       run: python ${{ github.action_path }}/src/backup_script.py
@@ -31,9 +28,8 @@ runs:
       env:
         SUPABASE_URL: ${{ inputs.SUPABASE_URL }}
         SUPABASE_SERVICE_ROLE: ${{ inputs.SUPABASE_SERVICE_ROLE }}
-        ZIP_FILENAME: ${{ inputs.ZIP_FILENAME }}
     - name: Upload Backup Zip as Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: supabase-backup-${{ env.NOW }}
-        path: supabase-backup/${{ inputs.ZIP_FILENAME }}
+        name: ${{ inputs.ARTIFACT_NAME }}
+        path: backup.zip
