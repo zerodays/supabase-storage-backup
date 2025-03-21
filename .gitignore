@@ -1,3 +1,5 @@
 venv
 supabase-backup
 .DS_Store
+.venv
+supabase-storage-backup.zip
