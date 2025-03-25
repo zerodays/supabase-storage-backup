@@ -1,11 +1,14 @@
 import os
 import zipfile
 from pathlib import Path
-from supabase import create_client, Client, StorageException, ClientOptions
+from supabase import create_client, Client, StorageException
+from supabase.lib.client_options import ClientOptions
 import shutil
 import time
 import random
 from typing import Optional
+
+STORAGE_CLIENT_TIMEOUT = 60
 
 
 def fetch_environment_variables() -> tuple[str, str, str, int, int]:
@@ -28,7 +31,13 @@ def fetch_environment_variables() -> tuple[str, str, str, int, int]:
 
 
 def create_supabase_client(url: str, service_role: str) -> Client:
-    return create_client(url, service_role)
+    return create_client(
+        url,
+        service_role,
+        ClientOptions(
+            storage_client_timeout=STORAGE_CLIENT_TIMEOUT,
+        ),
+    )
 
 
 def retry_operation(operation, max_retries=3, initial_delay=1, max_delay=30):
