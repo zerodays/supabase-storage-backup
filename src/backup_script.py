@@ -11,7 +11,7 @@ from typing import Optional
 STORAGE_CLIENT_TIMEOUT = 60
 
 
-def fetch_environment_variables() -> tuple[str, str, str, int, int]:
+def fetch_environment_variables() -> tuple[str, str, str, int]:
     supabase_url = os.getenv("SUPABASE_URL")
     if not supabase_url:
         raise ValueError("SUPABASE_URL environment variable is required")
